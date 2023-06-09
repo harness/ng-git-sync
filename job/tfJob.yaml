@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: terraform-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: standard-rwo
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: terraform
+spec:
+  template:
+    spec:
+      volumes:
+      - name: terraform-vol
+        persistentVolumeClaim:
+          claimName: terraform-pvc
+      containers:
+      - name: terraform
+        image: harnessdev/dockertf:1.0
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 500m
+          limits:
+            memory: 512Mi
+            cpu: 500m
+        volumeMounts:
+        - mountPath: "/ng-git-sync/pv"
+          name: terraform-vol
+        command: 
+        - /bin/sh
+        - -c
+        - |
+          pwd
+          df -h
+          echo
+          ls -l
+          echo
+          ls pv
+          term=https://
+          line={{.Values.repoUrl}}
+          line2="${line/${term}/}"
+          echo ${line2}
+          git clone -b {{.Values.branch}} https://{{.Values.repoAccessKey}}@$line2 repo
+          mv repo ~/../
+          sed -i "s/account_identifier/{{.Values.accountId}}/" "providers.tf"
+          sed -i "s/account_access_key/{{.Values.accountAccessKey}}/" "providers.tf"
+          sed -i "s|endpoint_url|{{.Values.endpoint}}|" "providers.tf"
+          terraform init -backend-config="path=pv/{{.Values.org}}/{{.Values.project}}/terraform.tfstate" -reconfigure
+          terraform plan -var "organization_name={{.Values.org}}" -var "project_name={{.Values.project}}"
+          # export TF_LOG=DEBUG
+          terraform apply -var "organization_name={{.Values.org}}" -var "project_name={{.Values.project}}" -auto-approve
+      restartPolicy: Never

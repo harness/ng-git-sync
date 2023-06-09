@@ -1,0 +1,8 @@
+repoUrl: <+trigger.repoUrl>
+branch: <+trigger.targetBranch>
+repoAccessKey: <+pipeline.variables.git_repo_access_key>
+accountId: <+pipeline.variables.account_identifier>
+accountAccessKey: <+pipeline.variables.account_access_key>
+org: <+pipeline.variables.org>
+project: <+pipeline.variables.project>
+endpoint: <+pipeline.variables.endpoint_url>
