@@ -1,0 +1,28 @@
+trigger:
+  name: rajGitSyncTrigger
+  identifier: rajGitSyncTrigger
+  enabled: true
+  encryptedWebhookSecretIdentifier: ""
+  description: ""
+  tags: {}
+  orgIdentifier: default
+  stagesToExecute: []
+  projectIdentifier: rajTest
+  pipelineIdentifier: NGGitSyncJob
+  source:
+    type: Webhook
+    spec:
+      type: Github
+      spec:
+        type: Push
+        spec:
+          connectorRef: gitsyncorgproject
+          autoAbortPreviousExecutions: true
+          payloadConditions:
+            - key: targetBranch
+              operator: Equals
+              value: test-from-branch
+          headerConditions: []
+          actions: []
+  inputSetRefs:
+    - rajGitSyncTest
