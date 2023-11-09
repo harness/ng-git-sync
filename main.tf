@@ -71,6 +71,7 @@ module "pipelines" {
   project_id      = module.project.details.id
   yaml_data       = <<EOT
     ${indent(4, yamlencode({ stages = each.value.stages }))}
+    ${indent(4, yamlencode({ allowStageExecutions = lookup(each.value, "allowStageExecutions", false) }))}
   EOT
 
 }
