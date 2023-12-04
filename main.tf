@@ -176,7 +176,7 @@ module "infrastructures" {
   name            = each.value.name
   organization_id = module.organization.details.id
   project_id      = module.project.details.id
-  environment_id  = module.environments[each.value.environment_name].environment_details.id
+  environment_id  = module.environments[each.value.environment_name].details.id
   type            = each.value.type
   deployment_type = each.value.deploymentType
   yaml_data       = <<EOT
